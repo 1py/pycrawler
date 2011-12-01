@@ -9,6 +9,7 @@ logging.basicConfig(level=0, format='%(levelname)s - - %(asctime)s %(message)s',
 
 def main():
     import crawler
+    crawler.common.DOWNLOAD_THREADS = 10
     crawler.main()
 
 if __name__ == '__main__':

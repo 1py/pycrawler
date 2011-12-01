@@ -3,7 +3,7 @@
 
 import sys, os, re, time
 import logging
-import json, zlib
+import urlparse
 
 __plugins_map = {}
 
@@ -15,21 +15,24 @@ def __init__():
             continue
         logging.info('try import plugins %r', plugin)
         mod = __import__(plugin)
-        for interface in ('encoding', 'parse', 'save'):
+        if not getattr(mod, '__domain__', None):
+            logging.error('%s.__domain__ is None!', plugin)
+            continue
+        for interface in ('parse', 'save'):
             if not callable(getattr(mod, interface, None)):
                 logging.critical('%s.%s is not callable!', plugin, interface)
                 sys.exit(-1)
-        __plugins_map[plugin] = {'encoding':mod.encoding, 'parse':mod.parse, 'save':mod.save}
+        for domain in mod.__domain__:
+            __plugins_map[domain] = {'parse':mod.parse, 'save':mod.save}
     sys.path.pop(0)
 
-def plugins_encoding(info):
-    return __plugins_map.get(info['tag'])['encoding'](info)
-
 def plugins_parse(info):
-    return __plugins_map.get(info['tag'])['parse'](info)
+    netloc = urlparse.urlparse(info['url']).netloc
+    return __plugins_map.get(netloc)['parse'](info)
 
 def plugins_save(info):
-    return __plugins_map.get(info['tag'])['save'](info)
+    netloc = urlparse.urlparse(info['url']).netloc
+    return __plugins_map.get(netloc)['save'](info)
 
 
 __init__()
