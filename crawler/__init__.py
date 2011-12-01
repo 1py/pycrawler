@@ -3,7 +3,7 @@
 
 import sys, os, re, time
 import logging
-import marshal
+import copy, marshal
 import threading
 try:
     import lxml.etree
@@ -101,12 +101,13 @@ class Parser(Worker):
                 url, headers, content = info['url'], info['headers'], info['content']
                 logging.info('%s try process url=%r', self.getName(), url)
                 result = plugins_parse(info)
-                for link in result.get('links', []):
-                    logging.info('parse out link: %r', link)
-                    self.redis_client.lpush(common.REDIS_DOWNLOAD, marshal.dumps({'url':link}))
-                if 'save' in result:
+                if result.get('links'):
+                    for linkinfo in result.get('links'):
+                        logging.info('parse out linkinfo: %r', linkinfo)
+                        self.redis_client.lpush(common.REDIS_DOWNLOAD, marshal.dumps(linkinfo))
+                if result.get('save'):
                     info.update(result)
-                    logging.info('%s send save content to saver url=%r', self.getName(), url)
+                    logging.info('%s send save info to saver url=%r', self.getName(), url)
                     self.redis_client.lpush(common.REDIS_SAVE, marshal.dumps(info))
                 logging.info('%s end process url=%r', self.getName(), url)
             except Exception, e:
