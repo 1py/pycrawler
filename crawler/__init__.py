@@ -25,7 +25,7 @@ try:
     import readability
 except ImportError:
     logging.critical('import readability fail')
-    sys.exit(-1)
+    #sys.exit(-1)
 
 from .plugins import _load_plugins
 from .plugins import plugins_parse, plugins_save
