@@ -73,7 +73,10 @@ class Downloader(Worker):
                 continue
             try:
                 info = marshal.loads(item)
-                url = info['url']
+                url = info.get('url')
+                if not url:
+                    logging.error('%s get a bad download info=%s', self.getName(), info)
+                    continue
                 info['retry'] = retry = info.get('retry', 0) + 1
                 logging.info('%s try process url=%r, retry=%r', self.getName(), url, retry)
                 if retry > common.DOWNLOAD_RETRY:
@@ -103,11 +106,11 @@ class Parser(Worker):
                 url, headers, content = info['url'], info['headers'], info['content']
                 logging.info('%s try process url=%r', self.getName(), url)
                 result = plugins_parse(info)
-                if result.get('download'):
+                if 'download' in result:
                     for downloadinfo in result.get('download'):
                         logging.info('parse need download info: %r', downloadinfo)
                         self.redis_client.lpush(common.REDIS_DOWNLOAD, marshal.dumps(downloadinfo))
-                if result.get('save'):
+                if 'save' in result:
                     for saveinfo in result.get('save'):
                         logging.info('%s send save info to saver url=%r', self.getName(), url)
                         self.redis_client.lpush(common.REDIS_SAVE, marshal.dumps(saveinfo))
@@ -134,7 +137,7 @@ class Saver(Worker):
 
 def main():
     if os.name == 'posix':
-        signal.signal(signal.SIGHUP, lambda n,e:_load_plugins())
+        signal.signal(signal.SIGUSR1, lambda n,e:_load_plugins())
     threads = []
     for i in xrange(common.DOWNLOAD_THREADS):
         t = Downloader()

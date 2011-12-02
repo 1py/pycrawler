@@ -14,7 +14,7 @@ def _load_plugins():
         if plugin in __plugins_map:
             continue
         logging.info('try import plugins %r', plugin)
-        mod = __import__(plugin)
+        mod = reload(__import__(plugin))
         if not getattr(mod, '__domain__', None):
             logging.error('%s.__domain__ is None!', plugin)
             continue
