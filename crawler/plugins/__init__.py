@@ -7,7 +7,7 @@ import urlparse
 
 __plugins_map = {}
 
-def __init__():
+def _load_plugins():
     plugins = set([os.path.splitext(x)[0] for x in os.listdir(os.path.dirname(__file__)) if not x.startswith('_') and x.endswith('.py')])
     sys.path.insert(0, os.path.dirname(__file__))
     for plugin in plugins:
@@ -36,7 +36,7 @@ def plugins_save(info):
     return __plugins_map.get(netloc)['save'](info)
 
 
-__init__()
+_load_plugins()
 
 
 

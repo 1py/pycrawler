@@ -4,6 +4,7 @@
 import sys, os, re, time
 import logging
 import copy, marshal
+import signal
 import threading
 try:
     import lxml.etree
@@ -26,6 +27,7 @@ except ImportError:
     logging.critical('import readability fail')
     sys.exit(-1)
 
+from .plugins import _load_plugins
 from .plugins import plugins_parse, plugins_save
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - - %(asctime)s %(message)s', datefmt='[%d/%b/%Y %H:%M:%S]')
@@ -131,6 +133,8 @@ class Saver(Worker):
                 logging.exception('Error: %s', e)
 
 def main():
+    if os.name == 'posix':
+        signal.signal(signal.SIGHUB, lambda n,e:_load_plugins())
     threads = []
     for i in xrange(common.DOWNLOAD_THREADS):
         t = Downloader()
