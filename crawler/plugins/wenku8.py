@@ -32,6 +32,9 @@ def save(info):
     text = lxml.etree.tounicode(tree.xpath("//div[@id='content']")[0], method='text')
     title = lxml.etree.tounicode(tree.xpath("//div[@id='title']")[0], method='text')
     filename = escapepath(u'%s_%s_%02d.txt' % ('wenku8', urllib.quote_plus(url), index))
-    with open('save/'+filename, 'wb') as fp:
+    dirname = 'save/'+urlparse.urlparse(url).netloc
+    if not os.path.exists(dirname):
+        os.mkdir(dirname)
+    with open(dirname+'/'+filename, 'wb') as fp:
         fp.write(text.encode('utf8'))
 

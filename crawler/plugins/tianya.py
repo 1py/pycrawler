@@ -54,7 +54,10 @@ def save(info):
         assert len(allpost) == len(allname)
         filename = escapepath(u'%s_%s_%02d.txt' % ('tianya', urllib.quote_plus(url), index))
         text = '\n'.join(post for name,post in zip(allname, allpost) if name==louzhu)
-        with open('save/'+filename, 'wb') as fp:
+        dirname = 'save/'+urlparse.urlparse(url).netloc
+        if not os.path.exists(dirname):
+            os.mkdir(dirname)
+        with open(dirname+'/'+filename, 'wb') as fp:
             fp.write(text.encode('utf8'))
     elif re.search(r'http://www.tianya.cn/techforum/content/.+?.shtml', url):
         allpost = [lxml.etree.tounicode(x, method='text') for x in tree.xpath("//div[@id='pContentDiv']/div[@class='item']/div[@class='post']")]
@@ -62,7 +65,10 @@ def save(info):
         assert len(allpost) == len(allname)
         filename = escapepath(u'%s_%s_%02d.txt' % ('tianya', urllib.quote_plus(url), index))
         text = '\n'.join(post for name,post in zip(allname, allpost) if name==louzhu)
-        with open('save/'+filename, 'wb') as fp:
+        dirname = 'save/'+urlparse.urlparse(url).netloc
+        if not os.path.exists(dirname):
+            os.mkdir(dirname)
+        with open(dirname+'/'+filename, 'wb') as fp:
             fp.write(text.encode('utf8'))
     else:
         pass
