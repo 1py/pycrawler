@@ -63,11 +63,13 @@ def save(info):
         allpost = [lxml.etree.tounicode(x, method='text') for x in tree.xpath("//div[@id='pContentDiv']/div[@class='item']/div[@class='post']")]
         allname = tree.xpath("//div[@id='pContentDiv']/div[@class='item']/div[@class='vcard']/a[starts-with(@href, 'http://my.tianya.cn/')]/text()")
         assert len(allpost) == len(allname)
-        filename = escapepath(u'%s_%s_%02d.txt' % ('tianya', urllib.quote_plus(url), index))
+        filename = escapepath(u'%02d.txt' % index)
         text = '\n'.join(post for name,post in zip(allname, allpost) if name==louzhu)
-        dirname = 'save/'+urlparse.urlparse(url).netloc
-        if not os.path.exists(dirname):
-            os.mkdir(dirname)
+        dirname = os.path.join('save', urlparse.urlparse(url).netloc, urllib.quote_plus(url))
+        try:
+            os.makedirs(dirname)
+        except:
+            pass
         with open(dirname+'/'+filename, 'wb') as fp:
             fp.write(text.encode('utf8'))
     else:
