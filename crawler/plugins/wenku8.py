@@ -17,7 +17,7 @@ def parse(info):
     tree = lxml.etree.fromstring(content.decode('gb18030', 'ignore'), lxml.etree.HTMLParser())
     if re.search(r'http://www.wenku8.cn/novel/\d+/\d+/index\.htm', url):
         links = tree.xpath("//td[@class='ccss']/a/@href")
-        return {'links':[{'url':link, 'index':i} for i, link in enumerate(links, 1)]}
+        return {'download':[{'url':link, 'index':i} for i, link in enumerate(links, 1)]}
     elif re.search(r'http://www.wenku8.cn/novel/\d+/\d+/\d+.htm', url):
         return {'save':True}
     else:

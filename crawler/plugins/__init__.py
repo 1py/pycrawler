@@ -22,6 +22,7 @@ def __init__():
             if not callable(getattr(mod, interface, None)):
                 logging.critical('%s.%s is not callable!', plugin, interface)
                 sys.exit(-1)
+        logging.info('import plugins %r ok, domain=%r', plugin, mod.__domain__)
         for domain in mod.__domain__:
             __plugins_map[domain] = {'parse':mod.parse, 'save':mod.save}
     sys.path.pop(0)

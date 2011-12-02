@@ -101,10 +101,10 @@ class Parser(Worker):
                 url, headers, content = info['url'], info['headers'], info['content']
                 logging.info('%s try process url=%r', self.getName(), url)
                 result = plugins_parse(info)
-                if result.get('links'):
-                    for linkinfo in result.get('links'):
-                        logging.info('parse out linkinfo: %r', linkinfo)
-                        self.redis_client.lpush(common.REDIS_DOWNLOAD, marshal.dumps(linkinfo))
+                if result.get('download'):
+                    for downloadinfo in result.get('download'):
+                        logging.info('parse need download info: %r', downloadinfo)
+                        self.redis_client.lpush(common.REDIS_DOWNLOAD, marshal.dumps(downloadinfo))
                 if result.get('save'):
                     info.update(result)
                     logging.info('%s send save info to saver url=%r', self.getName(), url)
