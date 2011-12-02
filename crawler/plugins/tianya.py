@@ -2,7 +2,7 @@
 # coding:utf-8
 
 import sys, os, re, time
-import urlparse
+import urlparse, urllib
 import logging
 import lxml.etree
 
@@ -38,8 +38,8 @@ def save(info):
     allpost = [lxml.etree.tounicode(x, method='text') for x in tree.xpath("//div[@class='allpost']/div[@class='post']")]
     allname = [firstauthor] + tree.xpath("//div[@class='allpost']/table//a/text()")
     assert len(allpost) == len(allname)
-    filename = escapepath(u'%02d.txt' % index)
+    filename = escapepath(u'%s_%s_%02d.txt' % ('tianya', urllib.quote_plus(url), index))
     text = '\n'.join(post for name,post in zip(allname, allpost) if name==louzhu)
-    with open(filename, 'wb') as fp:
+    with open('save/'+filename, 'wb') as fp:
         fp.write(text.encode('utf8'))
 

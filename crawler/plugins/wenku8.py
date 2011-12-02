@@ -2,7 +2,7 @@
 # coding:utf-8
 
 import sys, os, re, time
-import urlparse
+import urlparse, urllib
 import lxml.etree
 
 __domain__ = ['www.wenku8.cn']
@@ -29,7 +29,7 @@ def save(info):
     tree = lxml.etree.fromstring(content.decode('gb18030', 'ignore'), lxml.etree.HTMLParser())
     text = lxml.etree.tounicode(tree.xpath("//div[@id='content']")[0], method='text')
     title = lxml.etree.tounicode(tree.xpath("//div[@id='title']")[0], method='text')
-    filename = escapepath(u'%02d.%s.txt' % (index, title.strip()))
-    with open(filename, 'wb') as fp:
+    filename = escapepath(u'%s_%s_%02d.txt' % ('wenku8', urllib.quote_plus(url), index))
+    with open('save/'+filename, 'wb') as fp:
         fp.write(text.encode('utf8'))
 
