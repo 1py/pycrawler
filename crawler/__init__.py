@@ -108,9 +108,9 @@ class Parser(Worker):
                         logging.info('parse need download info: %r', downloadinfo)
                         self.redis_client.lpush(common.REDIS_DOWNLOAD, marshal.dumps(downloadinfo))
                 if result.get('save'):
-                    info.update(result)
-                    logging.info('%s send save info to saver url=%r', self.getName(), url)
-                    self.redis_client.lpush(common.REDIS_SAVE, marshal.dumps(info))
+                    for saveinfo in result.get('save'):
+                        logging.info('%s send save info to saver url=%r', self.getName(), url)
+                        self.redis_client.lpush(common.REDIS_SAVE, marshal.dumps(saveinfo))
                 logging.info('%s end process url=%r', self.getName(), url)
             except Exception, e:
                 logging.exception('Error: %s', e)

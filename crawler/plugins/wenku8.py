@@ -15,16 +15,18 @@ def parse(info):
     url, headers, content = info['url'], info['headers'], info['content']
     assert urlparse.urlparse(url).netloc in __domain__
     tree = lxml.etree.fromstring(content.decode('gb18030', 'ignore'), lxml.etree.HTMLParser())
+    result = {}
     if re.search(r'http://www.wenku8.cn/novel/\d+/\d+/index\.htm', url):
         links = tree.xpath("//td[@class='ccss']/a/@href")
-        return {'download':[{'url':link, 'index':i} for i, link in enumerate(links, 1)]}
+        result['download'] = [{'url':link, 'index':i} for i, link in enumerate(links, 1)]
     elif re.search(r'http://www.wenku8.cn/novel/\d+/\d+/\d+.htm', url):
-        return {'save':True}
+        result['save'] = [{'url':url, 'content':content, 'index':info.get('index', 0)}]
     else:
-        return {}
+        pass
+    return result
 
 def save(info):
-    url, headers, content, index = info['url'], info['headers'], info['content'], info['index']
+    url, content, index = info['url'], info['content'], info['index']
     assert urlparse.urlparse(url).netloc in __domain__
     tree = lxml.etree.fromstring(content.decode('gb18030', 'ignore'), lxml.etree.HTMLParser())
     text = lxml.etree.tounicode(tree.xpath("//div[@id='content']")[0], method='text')
