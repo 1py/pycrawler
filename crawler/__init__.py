@@ -134,7 +134,7 @@ class Saver(Worker):
 
 def main():
     if os.name == 'posix':
-        signal.signal(signal.SIGHUB, lambda n,e:_load_plugins())
+        signal.signal(signal.SIGHUP, lambda n,e:_load_plugins())
     threads = []
     for i in xrange(common.DOWNLOAD_THREADS):
         t = Downloader()
