@@ -66,6 +66,7 @@ class Downloader(Worker):
 
     def run(self):
         self.requests = requests.Session()
+        self.requests.config['max_retries'] = common.DOWNLOAD_RETRY
         while 1:
             item = self.redis_client.rpop(common.REDIS_DOWNLOAD)
             if item is None:
@@ -77,11 +78,7 @@ class Downloader(Worker):
                 if not url:
                     logging.error('%s get a bad download info=%s', self.getName(), info)
                     continue
-                info['retry'] = retry = info.get('retry', 0) + 1
-                logging.info('%s try process url=%r, retry=%r', self.getName(), url, retry)
-                if retry > common.DOWNLOAD_RETRY:
-                    logging.info('%s process url=%r retry=%r>3, continue', self.getName(), url, retry)
-                    continue
+                logging.info('%s try process url=%r', self.getName(), url)
                 self.redis_client.zadd(common.REDIS_DOWNLOADING, item, 1)
                 response = self.requests.get(url)
                 self.redis_client.zrem(common.REDIS_DOWNLOADING, item)
